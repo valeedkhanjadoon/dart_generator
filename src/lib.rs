@@ -12,11 +12,13 @@ mod defs {
 	use core::ops::ControlFlow;
 	use alloc::collections::VecDeque;
 	use alloc::vec::Vec;
+	use alloc::string::String;
 	use num_rational::Ratio;
 
 	// Explicit traits required for the visitor pattern implementations
 	use fandango_core::visitor::{Visitor, VisitableChildren, VisitResult};
-	use fandango_core::typing::{AsNodeRef, Downcast, Node, Nth, Opaque};
+	use fandango_core::visitor::write::WriteVisitor;
+	use fandango_core::typing::{AsNodeRef, ChildAccessor, Downcast, Node, Nth, Opaque};
 	use fandango_runtime::operators::{Checker};
 	use fandango_runtime::measurement::{Violations};
 
@@ -27,12 +29,136 @@ mod defs {
 
 	#[derive(Default)]
 	pub struct HypotheticalWhileLoopConstraint {
-		path: VecDeque<usize>,
-		violations: Vec<VecDeque<usize>>,
-		checked: usize
+		path: VecDeque<usize>, // "breadcrumb trail" of the path taken to the current node
+		violations: Vec<VecDeque<usize>>, // List of paths to violations
+		checked: usize // Number of nodes visited; how many times the constraint has been evaluated.
 	}
 
-	impl HypotheticalWhileLoopConstraint {
+    // Arbitrary Letter as Variable Name
+	#[derive(Default)]
+	pub struct SingleVariableConstraint {
+		path: VecDeque<usize>,
+		violations: Vec<VecDeque<usize>>,
+		checked: usize,
+		// Store the first variable name we see in expected_variable (e.g. "a", "b")
+		expected_variable: Option<String>,
+	}
+
+	impl SingleVariableConstraint {
+		fn check_id(&mut self, id_node: &nonterminal_id, path_extension: impl IntoIterator<Item = usize>) {
+			self.checked += 1;
+
+			// Extract the literal string value of the ID node
+			let id_str = String::from_utf8(
+				WriteVisitor::new(Vec::new())
+					.visit(id_node, 0)
+					.unwrap()
+					.continue_value()
+					.unwrap()
+					.output()
+			).unwrap();
+
+			match &self.expected_variable {
+				Some(expected) => {
+					if expected != &id_str {
+						// Mismatch! Record the exact path to this violating node
+						let mut violation_path = self.path.clone();
+						violation_path.extend(path_extension);
+						self.violations.push(violation_path);
+					}
+				}
+				None => {
+					// This is the very first variable we have seen, set the standard!
+					self.expected_variable = Some(id_str);
+				}
+			}
+		}
+	}
+
+	impl<T> Visitor<T> for SingleVariableConstraint
+	where
+		T: VisitableChildren<T>
+	+ AsNodeRef<nonterminal_declaration>
+	+ AsNodeRef<nonterminal_expr>
+	+ AsNodeRef<nonterminal_term>
+	+ AsNodeRef<nonterminal_id> // We still need this to pass it to our helper
+	{
+		type Continue = Self;
+		type Break = Infallible;
+		type Error = Infallible;
+
+		fn visit<'program, N>(mut self, node: &'program N, idx: usize) -> VisitResult<Self, T>
+		where
+			N: Node<Type<'program> = T>,
+			T: From<&'program N> + AsNodeRef<N>,
+		{
+			self.path.push_back(idx);
+			let visited = node.opaque();
+
+			// 1. Check Declarations
+			if let Some(tree) = visited.downcast::<nonterminal_declaration>() {
+				match tree.nth::<0>() {
+					nonterminal_declaration_0::variant_0(inner) => {
+						// | "int " <id> "=" <expr> ";"
+						let (_, id_part, _, _, _) = inner.children();
+						// Path: 0 (go inside), 0 (1st variant), 1 (2nd child is <id>)
+						self.check_id(id_part, [0, 0, 1]);
+					}
+					nonterminal_declaration_0::variant_1(inner) => {
+						// | "int " <id> ";"
+						let (_, id_part, _) = inner.children();
+						// Path: 0 (go inside), 1 (2nd variant), 1 (2nd child is <id>)
+						self.check_id(id_part, [0, 1, 1]);
+					}
+					_ => {}
+				}
+			}
+
+			// 2. Check Expressions
+			if let Some(tree) = visited.downcast::<nonterminal_expr>() {
+				if let nonterminal_expr_0::variant_0(inner) = tree.nth::<0>() {
+					// | <id> "=" <expr>
+					let (id_part, _, _) = inner.children();
+					// Path: 0 (go inside), 0 (1st variant), 0 (1st child is <id>)
+					self.check_id(id_part, [0, 0, 0]);
+				}
+			}
+
+			// 3. Check Terms
+			if let Some(tree) = visited.downcast::<nonterminal_term>() {
+				if let nonterminal_term_0::variant_1(inner) = tree.nth::<0>() {
+					// | <id>
+					// Because this variant only has exactly one child, we use .child() !! This did not work !!
+					// Because this variant is just a single non-terminal.
+					// 'inner' IS the nonterminal_id! !! IMPORTANT !! No need to unwrap it further.
+					let id_part = inner;
+					// Path: 0 (go inside), 1 (2nd variant), 0 (1st child is <id>)
+					self.check_id(id_part, [0, 1, 0]);
+				}
+			}
+
+			let result = visited.visit_each(self);
+			let Ok(ControlFlow::Continue(mut visitor)) = result;
+			visitor.path.pop_back();
+			Ok(ControlFlow::Continue(visitor))
+		}
+	}
+
+	// Don't forget to implement the Checker trait so the Evolver knows how to grade it.
+	impl Checker for SingleVariableConstraint {
+		fn violations(self) -> Violations {
+			Violations::new(
+				if self.checked  != 0 {
+					Ratio::new(self.checked - self.violations.len(), self.checked)
+				} else {
+					Ratio::default()
+				},
+				self.violations,
+			)
+		}
+	}
+
+	impl HypotheticalWhileLoopConstraint { // "Checking" magic or logic that is specific to this constraint.
 		fn check_paren_expr_for_validity(p_expr : &nonterminal_paren_expr) -> bool {
 			// Placeholder, for illustrative purposes.
 			return true;
@@ -291,6 +417,63 @@ mod test {
 				String::from_utf8(
 					WriteVisitor::new(Vec::new())
 						.visit(&generated, 0)
+						.unwrap()
+						.continue_value()
+						.unwrap()
+						.output()
+				).unwrap()
+			);
+		}
+	}
+
+	#[test]
+	fn c_single_variable_constraint_in_evolver() {
+		extern crate std;
+
+		// Hook up our new constraint
+		let fitness = ViolationFitness::<crate::SingleVariableConstraint>::new();
+		let fixer = (); // We aren't testing fixers yet
+
+		let mut runtime = BasicEvolver::new::<nonterminal_start>(
+			fitness,
+			fixer,
+			100, // Population size
+			10, // Offspring
+			1000, // Max nodes
+			Ratio::new(50, 100),
+		).expect("Should be valid.");
+
+		let generator = DepthLimiter::new(crate::STRUCTURE.inner(), 10);
+		let mut generators = tuple_list!(generator);
+		let mut sampler = StdRng::seed_from_u64(42); // Seeded for reproducibility
+
+		let mut population = runtime.initial(&mut generators, &mut sampler).unwrap();
+
+		for i in 0..25 {
+			let fitness = population
+				.iter()
+				.map(|i| i.measurement().fitness())
+				.fold(0.0f64, |v, r| v + *r.numer() as f64 / *r.denom() as f64)
+				/ population.len() as f64;
+
+			if fitness == 1.0 {
+				std::println!("Saturated fitness at generation {i}! Constraint satisfied.");
+				break;
+			}
+			std::println!("Average fitness at generation {i}: {fitness}");
+			population = runtime.step(&mut generators, &mut sampler, population).unwrap();
+		}
+
+		population.sort_by(|i1, i2| i1.node().cmp(i2.node()));
+		population.dedup_by(|i1, i2| i1.node() == i2.node());
+
+		std::println!("Final Compliant Population:");
+		for (i, candidate) in population.into_iter().enumerate() {
+			std::println!(
+				"Program {i}:\n{}",
+				String::from_utf8(
+					WriteVisitor::new(Vec::new())
+						.visit(candidate.node(), 0)
 						.unwrap()
 						.continue_value()
 						.unwrap()
