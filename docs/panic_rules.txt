@@ -1,0 +1,7 @@
+# Fandango Macro Panic Analysis
+# The following minimal set of grammar rules triggers the `called Option::unwrap() on a None value` panic.
+# This occurs because these rules form a cyclic recursion where no terminal string can ever be reached (no base case).
+
+<conditionalExpression> ::= <ifNullExpression> (<QU> <expressionWithoutCascade> <CO> <expressionWithoutCascade>)?;
+<expressionWithoutCascade> ::= <assignableExpression> <assignmentOperator> <expressionWithoutCascade> | <conditionalExpression> | <throwExpressionWithoutCascade>;
+<throwExpressionWithoutCascade> ::= <THROW_> <expressionWithoutCascade>;

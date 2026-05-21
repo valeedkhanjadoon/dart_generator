@@ -21,6 +21,8 @@ mod defs {
 mod test {
 	// Import any non-terminals you like from crate. Crate refers to your local crate.
 	use crate::{nonterminal_start};
+	use fandango::typing::Structured;
+	use fandango::generation::Generated;
 
 	// These are the fandango-rs imports. A later lesson will go over them in more detail.
 	use fandango::tuple_list::tuple_list;
