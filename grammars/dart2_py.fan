@@ -1,3 +1,6 @@
+# Regex-less dart2 grammar for python
+# To test out this grammar, run: fandango fuzz -f grammars/dart2_py.fan -n 10 -N 10
+
 <start> ::= <compilationUnit>
 <additiveExpression> ::= <multiplicativeExpression> (<additiveOperator> <multiplicativeExpression>)* | <SUPER_> (<additiveOperator> <multiplicativeExpression>)+
 <additiveOperator> ::= <PL> | <MINUS>

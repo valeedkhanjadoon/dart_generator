@@ -9,20 +9,8 @@ pub use defs::*;
 mod defs {
 	use core::convert::Infallible;
 	use fandango::Fandango;
-	use core::ops::ControlFlow;
-	use alloc::collections::VecDeque;
-	use alloc::vec::Vec;
-	use alloc::string::String;
-	use num_rational::Ratio;
 
-	// Explicit traits required for the visitor pattern implementations
-	use fandango_core::visitor::{Visitor, VisitableChildren, VisitResult};
-	use fandango_core::visitor::write::WriteVisitor;
-	use fandango_core::typing::{AsNodeRef, ChildAccessor, Downcast, Node, Nth, Opaque};
-	use fandango_runtime::operators::{Checker};
-	use fandango_runtime::measurement::{Violations};
-
-	/// Base for the grammar stored in scriptsizec.fan.
+	/// Base for the grammar
 	#[derive(Fandango)]
 	#[fandango(grammar = "grammars/dart2.fan", parse = false)]
 	pub struct LanguageName(Infallible);
@@ -35,19 +23,12 @@ mod test {
 	use crate::{nonterminal_start};
 
 	// These are the fandango-rs imports. A later lesson will go over them in more detail.
-	use fandango::generation::Generated;
 	use fandango::tuple_list::tuple_list;
-	use fandango::typing::Structured;
 	use fandango::visitor::write::WriteVisitor;
 	use fandango::visitor::Visitor;
-	use fandango_runtime::population::Individual;
-	use fandango_runtime::operators::{Checker, DepthLimiter};
-	use fandango_runtime::evolvers::Evolver;
-	use fandango_runtime::evolvers::basic::BasicEvolver;
-	use fandango_runtime::measurement::{HasFitness, ViolationFitness, HasMeasurement};
+	use fandango_runtime::operators::{DepthLimiter};
 	use alloc::string::String;
 	use alloc::vec::Vec;
-	use num_rational::Ratio;
 	use rand::SeedableRng;
 	use rand::rngs::StdRng;
 
