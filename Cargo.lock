@@ -55,6 +55,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "dart_generator"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "fandango",
+ "fandango-core",
+ "fandango-runtime",
+ "num-rational",
+ "pest",
+ "rand",
+]
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -225,19 +238,6 @@ checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
 dependencies = [
  "equivalent",
  "hashbrown 0.17.0",
-]
-
-[[package]]
-name = "lang_generator"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "fandango",
- "fandango-core",
- "fandango-runtime",
- "num-rational",
- "pest",
- "rand",
 ]
 
 [[package]]

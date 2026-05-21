@@ -1,11 +1,12 @@
 //! Document your crate :-)
+//! To run the fuzzer: RUSTFLAGS=-Znext-solver cargo +nightly test dart_can_generate_and_execute -- --no-capture
 
 #![no_std]
 
 extern crate alloc;
 
 pub use defs::*;
-// pub use fuzzer::*;
+pub use fuzzer::*;
 mod defs {
 	use core::convert::Infallible;
 	use fandango::Fandango;
@@ -20,7 +21,7 @@ mod defs {
 #[cfg(test)]
 mod test {
 	// Import any non-terminals you like from crate. Crate refers to your local crate.
-	use crate::{nonterminal_start};
+	use crate::{nonterminal_start, gen_and_execute_one};
 	use fandango::typing::Structured;
 	use fandango::generation::Generated;
 
@@ -65,122 +66,117 @@ mod test {
 		}
 	}
 
-	// #[test]
-	// fn c_can_generate_and_execute() {
-	// 	extern crate std;
-	//
-	// 	let num_tests = 10;
-	// 	let mut compiled = 0;
-	// 	for _ in 0..num_tests {
-	// 		std::println!("============================");
-	// 		match gen_and_compile_one() {
-	// 			Ok(true) => compiled += 1,
-	// 			Ok(false) => (),
-	// 			Err(_) => {
-	// 				std::println!("Issues setting up gcc.")
-	// 			}
-	// 		}
-	// 	}
-	//
-	// 	std::println!("Of {}, {} compiled.", num_tests, compiled);
-	// }
+	#[test]
+	fn dart_can_generate_and_execute() {
+		extern crate std;
+
+		let num_tests = 100;
+		let mut executed = 0;
+		for _ in 0..num_tests {
+			std::println!("============================");
+			match gen_and_execute_one() {
+				Ok(true) => executed += 1,
+				Ok(false) => (),
+				Err(_) => {
+					std::println!("Issues setting up Dart.")
+				}
+			}
+		}
+
+		std::println!("Of {}, {} executed.", num_tests, executed);
+	}
 }
 
-// pub mod fuzzer {
-// 	extern crate std;
-//
-// 	use alloc::string::String;
-// 	use alloc::vec::Vec;
-// 	use anyhow::Error;
-// 	use fandango::tuple_list::tuple_list;
-// 	use fandango_core::generation::Generated;
-// 	use fandango_runtime::operators::DepthLimiter;
-// 	use rand::SeedableRng;
-// 	use rand::rngs::StdRng;
-// 	use std::process::{Command, Stdio};
-// 	use fandango_core::visitor::Visitor;
-// 	use fandango_core::visitor::write::WriteVisitor;
-// 	use crate::defs::*;
-//
-// 	pub fn gen_and_compile_one() -> Result<bool, Error> {
-// 		// First, generate a program.
-// 		let generator = DepthLimiter::new(STRUCTURE.inner(), 10);
-// 		let mut generators = tuple_list!(generator);
-// 		let mut rng = StdRng::from_os_rng(); // So you get a different program each time.
-//
-// 		let generated =
-// 			nonterminal_start::generate(&mut rng, &mut generators, 0);
-//
-// 		// We also want the string later, grab it now.
-// 		let generated_as_str = String::from_utf8(
-// 			WriteVisitor::new(Vec::new())
-// 				.visit(&generated, 0)?
-// 				.continue_value()
-// 				.unwrap()
-// 				.output()
-// 		)?;
-//
-// 		// Compile it.
-// 		// Configure this based on whichever C compiler you have access to.
-// 		// This is just a sample configuration for invoking gcc like `gcc -x c -o /dev/ull - <stdin>`
-// 		let process_or_not = Command::new("gcc")
-// 			.arg("-x")
-// 			.arg("c")
-// 			.arg("-o")
-// 			.arg("/dev/null")
-// 			.arg("-")
-// 			.stdin(Stdio::piped())
-// 			.stdout(Stdio::piped())
-// 			.stderr(Stdio::piped())
-// 			.spawn();
-//
-// 		let mut process = match process_or_not {
-// 			Ok(p) => p,
-// 			Err(e) => {
-// 				std::println!("Failed to spawn gcc process: {e}");
-// 				return Err(e.into());
-// 			}
-// 		};
-//
-// 		let stdin = process.stdin.as_mut().expect("Failed to open stdin");
-// 		use std::io::Write;
-// 		// Add stdio manually so things can compile.
-// 		writeln!(stdin, "#include <stdio.h>")?;
-// 		writeln!(stdin)?;
-// 		// Wrap this in a main function.
-// 		stdin
-// 			.write_all(
-// 				&WriteVisitor::new(Vec::new())
-// 					.visit(&generated, 0)?
-// 					.continue_value()
-// 					.unwrap()
-// 					.output(),
-// 			)?;
-// 		// Also add a main function that returns 0 to make it a valid C program.
-// 		writeln!(stdin)?;
-// 		writeln!(stdin, "int main() {{ return 0; }}")?;
-//
-// 		let output = process
-// 			.wait_with_output()
-// 			.expect("Failed to read gcc output");
-//
-// 		if output.status.success() {
-// 			std::println!("Successfully compiled:");
-// 			std::println!(
-// 				"{}", generated_as_str
-// 			);
-//
-// 			Ok(true)
-// 		} else {
-// 			std::println!("Failed to compile:");
-// 			std::println!("GCC exit code: {}", output.status);
-// 			std::println!("GCC stdout: {}", String::from_utf8_lossy(&output.stdout));
-// 			std::println!("GCC stderr: {}", String::from_utf8_lossy(&output.stderr));
-// 			std::println!(
-// 				"{}", generated_as_str
-// 			);
-//
-// 			Ok(false)
-// 		}
-// 	}
-// }
+pub mod fuzzer {
+	extern crate std;
+
+	use alloc::string::String;
+	use alloc::vec::Vec;
+	use anyhow::Error;
+	use fandango::tuple_list::tuple_list;
+	use fandango_core::generation::Generated;
+	use fandango_runtime::operators::DepthLimiter;
+	use rand::SeedableRng;
+	use rand::rngs::StdRng;
+	use std::process::{Command, Stdio};
+	use fandango_core::visitor::Visitor;
+	use fandango_core::visitor::write::WriteVisitor;
+	use crate::defs::*;
+
+	struct TempFile {
+		path: std::path::PathBuf,
+	}
+
+	impl Drop for TempFile {
+		fn drop(&mut self) {
+			let _ = std::fs::remove_file(&self.path);
+		}
+	}
+
+	pub fn gen_and_execute_one() -> Result<bool, Error> {
+		// First, generate a program.
+		let generator = DepthLimiter::new(STRUCTURE.inner(), 10);
+		let mut generators = tuple_list!(generator);
+		let mut rng = StdRng::from_os_rng(); // So you get a different program each time.
+
+		let generated =
+			nonterminal_start::generate(&mut rng, &mut generators, 0);
+
+		let generated_as_str = String::from_utf8(
+			WriteVisitor::new(Vec::new())
+				.visit(&generated, 0)?
+				.continue_value()
+				.unwrap()
+				.output()
+		)?;
+
+		// Get standard temporary directory path and generate a filename.
+		let temp_dir = std::env::temp_dir();
+		let file_path = temp_dir.join("fuzzed_program.dart");
+
+		// Write fuzzed program to temporary file
+		std::fs::write(&file_path, &generated_as_str)?;
+
+		// Ensure automatic cleanup using RAII
+		let _cleanup = TempFile { path: file_path.clone() };
+
+		// Compile and run the temporary file using Dart
+		let process_or_not = Command::new("dart")
+			.arg("run")
+			.arg(&file_path)
+			.stdout(Stdio::piped())
+			.stderr(Stdio::piped())
+			.spawn();
+
+		let process = match process_or_not {
+			Ok(p) => p,
+			Err(e) => {
+				std::println!("Failed to spawn Dart process: {e}");
+				return Err(e.into());
+			}
+		};
+
+		let output = process
+			.wait_with_output()
+			.expect("Failed to read Dart output");
+
+		if output.status.success() {
+			std::println!("Successfully executed:");
+			std::println!(
+				"{}", generated_as_str
+			);
+
+			Ok(true)
+		} else {
+			std::println!("Failed to execute:");
+			std::println!("Dart exit code: {}", output.status);
+			std::println!("Dart stdout: {}", String::from_utf8_lossy(&output.stdout));
+			std::println!("Dart stderr: {}", String::from_utf8_lossy(&output.stderr));
+			std::println!(
+				"{}", generated_as_str
+			);
+
+			Ok(false)
+		}
+	}
+}
