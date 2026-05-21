@@ -70,11 +70,20 @@ mod test {
 	fn dart_can_generate_and_execute() {
 		extern crate std;
 
+		// Calculate a unique timestamped file path for logging
+		let timestamp = std::time::SystemTime::now()
+			.duration_since(std::time::UNIX_EPOCH)
+			.unwrap()
+			.as_secs();
+		let log_dir = std::path::Path::new("fuzzer_runs");
+		let _ = std::fs::create_dir_all(log_dir);
+		let log_path = log_dir.join(std::format!("run_{}.txt", timestamp));
+
 		let num_tests = 100;
 		let mut executed = 0;
 		for _ in 0..num_tests {
 			std::println!("============================");
-			match gen_and_execute_one() {
+			match gen_and_execute_one(Some(&log_path)) {
 				Ok(true) => executed += 1,
 				Ok(false) => (),
 				Err(_) => {
@@ -84,6 +93,23 @@ mod test {
 		}
 
 		std::println!("Of {}, {} executed.", num_tests, executed);
+		std::println!("Fuzzer run log saved to: {}", log_path.display());
+
+		// Append final fuzzer execution summary to the log file
+		if let Ok(mut file) = std::fs::OpenOptions::new()
+			.create(true)
+			.append(true)
+			.open(&log_path)
+		{
+			use std::io::Write;
+			let success_rate = (executed as f64 / num_tests as f64) * 100.0;
+			let _ = writeln!(file, "=========================================");
+			let _ = writeln!(file, "SUMMARY:");
+			let _ = writeln!(file, "Total programs generated: {}", num_tests);
+			let _ = writeln!(file, "Successfully compiled/executed: {} / {}", executed, num_tests);
+			let _ = writeln!(file, "Success rate: {:.2}%", success_rate);
+			let _ = writeln!(file, "=========================================");
+		}
 	}
 }
 
@@ -113,7 +139,7 @@ pub mod fuzzer {
 		}
 	}
 
-	pub fn gen_and_execute_one() -> Result<bool, Error> {
+	pub fn gen_and_execute_one(log_path: Option<&std::path::Path>) -> Result<bool, Error> {
 		// First, generate a program.
 		let generator = DepthLimiter::new(STRUCTURE.inner(), 10);
 		let mut generators = tuple_list!(generator);
@@ -160,7 +186,32 @@ pub mod fuzzer {
 			.wait_with_output()
 			.expect("Failed to read Dart output");
 
-		if output.status.success() {
+		let is_success = output.status.success();
+
+		if let Some(path) = log_path {
+			use std::io::Write;
+			let mut file = std::fs::OpenOptions::new()
+				.create(true)
+				.append(true)
+				.open(path)?;
+
+			writeln!(file, "=========================================")?;
+			writeln!(file, "Generated Program:")?;
+			writeln!(file, "------------------")?;
+			writeln!(file, "{}", generated_as_str)?;
+			writeln!(file, "------------------")?;
+			if is_success {
+				writeln!(file, "Result: SUCCESS")?;
+			} else {
+				writeln!(file, "Result: FAILED")?;
+				writeln!(file, "Exit Code: {}", output.status)?;
+				writeln!(file, "Stdout:\n{}", String::from_utf8_lossy(&output.stdout))?;
+				writeln!(file, "Stderr:\n{}", String::from_utf8_lossy(&output.stderr))?;
+			}
+			writeln!(file, "=========================================\n")?;
+		}
+
+		if is_success {
 			std::println!("Successfully executed:");
 			std::println!(
 				"{}", generated_as_str
