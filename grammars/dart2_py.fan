@@ -41,7 +41,7 @@
 <constructorName> ::= <typeIdentifier> (<D> <identifier>)?
 <constructorSignature> ::= <constructorName> <formalParameterList>
 <continueStatement> ::= <CONTINUE_> <identifier>? <SC>
-<declaration> ::= <ABSTRACT_>? (<EXTERNAL_> <factoryConstructorSignature> | <EXTERNAL_> <constantConstructorSignature> | <EXTERNAL_> <constructorSignature> | (<EXTERNAL_> <STATIC_>?)? <getterSignature> | (<EXTERNAL_> <STATIC_>?)? <setterSignature> | (<EXTERNAL_> <STATIC_>?)? <functionSignature> | <EXTERNAL_>? <operatorSignature> | <STATIC_> <CONST_> <__type__>? <staticFinalDeclarationList> | <STATIC_> <FINAL_> <__type__>? <staticFinalDeclarationList> | <STATIC_> <LATE_> <FINAL_> <__type__>? <initializedIdentifierList> | <STATIC_> <LATE_>? <varOrType> <initializedIdentifierList> | <COVARIANT_> <LATE_> <FINAL_> <__type__>? <identifierList> | <COVARIANT_> <LATE_>? <varOrType> <initializedIdentifierList> | <LATE_>? <FINAL_> <__type__>? <initializedIdentifierList> | <LATE_>? <varOrType> <initializedIdentifierList> | <redirectingFactoryConstructorSignature> | <constantConstructorSignature> (<redirection> | <initializers>)? | <constructorSignature> (<redirection> | <initializers>)?)
+<declaration> ::= <ABSTRACT_>? (<EXTERNAL_> <factoryConstructorSignature> | <EXTERNAL_> <constantConstructorSignature> | <EXTERNAL_> <constructorSignature> | (<EXTERNAL_> <STATIC_>?)? <getterSignature> | (<EXTERNAL_> <STATIC_>?)? <setterSignature> | (<EXTERNAL_> <STATIC_>?)? <functionSignature> | <EXTERNAL_>? <operatorSignature> | <STATIC_> <CONST_> <type_>? <staticFinalDeclarationList> | <STATIC_> <FINAL_> <type_>? <staticFinalDeclarationList> | <STATIC_> <LATE_> <FINAL_> <type_>? <initializedIdentifierList> | <STATIC_> <LATE_>? <varOrType> <initializedIdentifierList> | <COVARIANT_> <LATE_> <FINAL_> <type_>? <identifierList> | <COVARIANT_> <LATE_>? <varOrType> <initializedIdentifierList> | <LATE_>? <FINAL_> <type_>? <initializedIdentifierList> | <LATE_>? <varOrType> <initializedIdentifierList> | <redirectingFactoryConstructorSignature> | <constantConstructorSignature> (<redirection> | <initializers>)? | <constructorSignature> (<redirection> | <initializers>)?)
 <declaredIdentifier> ::= <COVARIANT_>? <finalConstVarOrType> <identifier>
 <defaultCase> ::= <label>* <DEFAULT_> <CO> <statements>
 <defaultFormalParameter> ::= <normalFormalParameter> (<EQ> <expr>)?
@@ -59,11 +59,11 @@
 <expressionList> ::= <expr> (<C> <expr>)*
 <expressionStatement> ::= <expr>? <SC>
 <expressionWithoutCascade> ::= <assignableExpression> <assignmentOperator> <expressionWithoutCascade> | <conditionalExpression> | <throwExpressionWithoutCascade>
-<extensionDeclaration> ::= <EXTENSION_> <identifier>? <typeParameters>? <ON_> <__type__> <OBC> (<metadata> <classMemberDeclaration>)* <CBC>
+<extensionDeclaration> ::= <EXTENSION_> <identifier>? <typeParameters>? <ON_> <type_> <OBC> (<metadata> <classMemberDeclaration>)* <CBC>
 <factoryConstructorSignature> ::= <CONST_>? <FACTORY_> <constructorName> <formalParameterList>
 <fieldFormalParameter> ::= <finalConstVarOrType>? <THIS_> <D> <identifier> (<formalParameterPart> <QU>?)?
 <fieldInitializer> ::= (<THIS_> <D>)? <identifier> <EQ> <initializerExpression>
-<finalConstVarOrType> ::= <LATE_>? <FINAL_> <__type__>? | <CONST_> <__type__>? | <LATE_>? <varOrType>
+<finalConstVarOrType> ::= <LATE_>? <FINAL_> <type_>? | <CONST_> <type_>? | <LATE_>? <varOrType>
 <finallyPart> ::= <FINALLY_> <block>
 <forElement> ::= <AWAIT_>? <FOR_> <OP> <forLoopParts> <CP> <element>
 <forInitializerStatement> ::= <localVariableDeclaration> | <expr>? <SC>
@@ -74,14 +74,14 @@
 <functionBody> ::= <NATIVE_> <stringLiteral>? <SC> | <ASYNC_>? <EG> <expr> <SC> | (<ASYNC_> <ST>? | <SYNC_> <ST>)? <block>
 <functionExpression> ::= <formalParameterPart> <functionExpressionBody>
 <functionExpressionBody> ::= <ASYNC_>? <EG> <expr> | (<ASYNC_> <ST>? | <SYNC_> <ST>)? <block>
-<functionFormalParameter> ::= <COVARIANT_>? <__type__>? <identifier> <formalParameterPart> <QU>?
-<functionPrefix> ::= <__type__>? <identifier>
-<functionSignature> ::= <__type__>? <identifier> <formalParameterPart>
+<functionFormalParameter> ::= <COVARIANT_>? <type_>? <identifier> <formalParameterPart> <QU>?
+<functionPrefix> ::= <type_>? <identifier>
+<functionSignature> ::= <type_>? <identifier> <formalParameterPart>
 <functionType> ::= <functionTypeTails> | <typeNotFunction> <functionTypeTails>
 <functionTypeAlias> ::= <functionPrefix> <formalParameterPart> <SC>
 <functionTypeTail> ::= <FUNCTION_> <typeParameters>? <parameterTypeList>
 <functionTypeTails> ::= <functionTypeTail> <QU>? <functionTypeTails> | <functionTypeTail>
-<getterSignature> ::= <__type__>? <GET_> <identifier>
+<getterSignature> ::= <type_>? <GET_> <identifier>
 <identifier> ::= <IDENTIFIER> | <ABSTRACT_> | <AS_> | <COVARIANT_> | <DEFERRED_> | <DYNAMIC_> | <EXPORT_> | <EXTERNAL_> | <EXTENSION_> | <FACTORY_> | <FUNCTION_> | <GET_> | <IMPLEMENTS_> | <IMPORT_> | <INTERFACE_> | <LATE_> | <LIBRARY_> | <MIXIN_> | <OPERATOR_> | <PART_> | <REQUIRED_> | <SET_> | <STATIC_> | <TYPEDEF_> | <FUNCTION_> | <ASYNC_> | <HIDE_> | <OF_> | <ON_> | <SHOW_> | <SYNC_> | <AWAIT_> | <YIELD_> | <DYNAMIC_> | <NATIVE_>
 <identifierList> ::= <identifier> (<C> <identifier>)*
 <ifElement> ::= <IF_> <OP> <expr> <CP> <element> (<ELSE_> <element>)?
@@ -131,13 +131,13 @@
 <normalFormalParameter> ::= <metadata> <normalFormalParameterNoMetadata>
 <normalFormalParameterNoMetadata> ::= <functionFormalParameter> | <fieldFormalParameter> | <simpleFormalParameter>
 <normalFormalParameters> ::= <normalFormalParameter> (<C> <normalFormalParameter>)*
-<normalParameterType> ::= <metadata> <typedIdentifier> | <metadata> <__type__>
+<normalParameterType> ::= <metadata> <typedIdentifier> | <metadata> <type_>
 <normalParameterTypes> ::= <normalParameterType> (<C> <normalParameterType>)*
 <nullLiteral> ::= <NULL_>
 <numericLiteral> ::= <NUMBER> | <HEX_NUMBER>
 <onPart> ::= <catchPart> <block> | <ON_> <typeNotVoid> <catchPart>? <block>
 <operator> ::= <SQUIG> | <binaryOperator> | <OB> <CB> | <OB> <CB> <EQ>
-<operatorSignature> ::= <__type__>? <OPERATOR_> <operator> <formalParameterList>
+<operatorSignature> ::= <type_>? <OPERATOR_> <operator> <formalParameterList>
 <optionalOrNamedFormalParameters> ::= <optionalPositionalFormalParameters> | <namedFormalParameters>
 <optionalParameterTypes> ::= <optionalPositionalParameterTypes> | <namedParameterTypes>
 <optionalPositionalFormalParameters> ::= <OB> <defaultFormalParameter> (<C> <defaultFormalParameter>)* <C>? <CB>
@@ -159,7 +159,7 @@
 <returnStatement> ::= <RETURN_> <expr>? <SC>
 <selector> ::= <NOT> | <assignableSelector> | <argumentPart>
 <setOrMapLiteral> ::= <CONST_>? <typeArguments>? <OBC> <elements>? <CBC>
-<setterSignature> ::= <__type__>? <SET_> <identifier> <formalParameterList>
+<setterSignature> ::= <type_>? <SET_> <identifier> <formalParameterList>
 <shiftExpression> ::= <additiveExpression> (<shiftOperator> <additiveExpression>)* | <SUPER_> (<shiftOperator> <additiveExpression>)+
 <shiftOperator> ::= <LTLT> | <GT> <GT> <GT> | <GT> <GT>
 <simpleFormalParameter> ::= <declaredIdentifier> | <COVARIANT_>? <identifier>
@@ -178,15 +178,15 @@
 <throwExpression> ::= <THROW_> <expr>
 <throwExpressionWithoutCascade> ::= <THROW_> <expressionWithoutCascade>
 <tildeOperator> ::= <SQUIG>
-<topLevelDeclaration> ::= <classDeclaration> | <mixinDeclaration> | <extensionDeclaration> | <enumType> | <typeAlias> | <EXTERNAL_> <functionSignature> <SC> | <EXTERNAL_> <getterSignature> <SC> | <EXTERNAL_> <setterSignature> <SC> | <functionSignature> <functionBody> | <getterSignature> <functionBody> | <setterSignature> <functionBody> | (<FINAL_> | <CONST_>) <__type__>? <staticFinalDeclarationList> <SC> | <LATE_> <FINAL_> <__type__>? <initializedIdentifierList> <SC> | <LATE_>? <varOrType> <initializedIdentifierList> <SC>
+<topLevelDeclaration> ::= <classDeclaration> | <mixinDeclaration> | <extensionDeclaration> | <enumType> | <typeAlias> | <EXTERNAL_> <functionSignature> <SC> | <EXTERNAL_> <getterSignature> <SC> | <EXTERNAL_> <setterSignature> <SC> | <functionSignature> <functionBody> | <getterSignature> <functionBody> | <setterSignature> <functionBody> | (<FINAL_> | <CONST_>) <type_>? <staticFinalDeclarationList> <SC> | <LATE_> <FINAL_> <type_>? <initializedIdentifierList> <SC> | <LATE_>? <varOrType> <initializedIdentifierList> <SC>
 <tryStatement> ::= <TRY_> <block> (<onPart>+ <finallyPart>? | <finallyPart>)
-<__type__> ::= <functionType> <QU>? | <typeNotFunction>
-<typeAlias> ::= <TYPEDEF_> <typeIdentifier> <typeParameters>? <EQ> <__type__> <SC> | <TYPEDEF_> <functionTypeAlias>
+<type_> ::= <functionType> <QU>? | <typeNotFunction>
+<typeAlias> ::= <TYPEDEF_> <typeIdentifier> <typeParameters>? <EQ> <type_> <SC> | <TYPEDEF_> <functionTypeAlias>
 <typeArguments> ::= <LT> <typeList> <GT>
 <typeCast> ::= <asOperator> <typeNotVoid>
-<typedIdentifier> ::= <__type__> <identifier>
+<typedIdentifier> ::= <type_> <identifier>
 <typeIdentifier> ::= <IDENTIFIER> | <ASYNC_> | <HIDE_> | <OF_> | <ON_> | <SHOW_> | <SYNC_> | <AWAIT_> | <YIELD_> | <DYNAMIC_> | <NATIVE_> | <FUNCTION_>
-<typeList> ::= <__type__> (<C> <__type__>)*
+<typeList> ::= <type_> (<C> <type_>)*
 <typeName> ::= <typeIdentifier> (<D> <typeIdentifier>)?
 <typeNotFunction> ::= <VOID_> | <typeNotVoidNotFunction>
 <typeNotVoid> ::= <functionType> <QU>? | <typeNotVoidNotFunction>
@@ -199,11 +199,10 @@
 <unconditionalAssignableSelector> ::= <OB> <expr> <CB> | <D> <identifier>
 <uri> ::= <stringLiteral>
 <uriTest> ::= <dottedIdentifierList> (<EE> <stringLiteral>)?
-<varOrType> ::= <VAR_> | <__type__>
+<varOrType> ::= <VAR_> | <type_>
 <whileStatement> ::= <WHILE_> <OP> <expr> <CP> <statement>
 <yieldEachStatement> ::= <YIELD_> <ST> <expr> <SC>
 <yieldStatement> ::= <YIELD_> <expr> <SC>
-
 <A> ::= '&'
 <AA> ::= '&&'
 <AE> ::= '&='
@@ -324,22 +323,26 @@
 <YIELD_> ::= 'yield'
 <NUMBER> ::= <DIGIT>+ ('.' <DIGIT>+)? <EXPONENT>? | '.' <DIGIT>+ <EXPONENT>?
 <HEX_NUMBER> ::= '0x' <HEX_DIGIT>+ | '0X' <HEX_DIGIT>+
-<SingleLineString> ::= <StringDQ> | <StringSQ> | 'r\'' r"not ('\''|'\n'|'\r')"* '\'' | 'r"' r"""not ('"'|'\n'|'\r')"""* '"'
-<MultiLineString> ::= '"""' <StringContentTDQ>* '"""' | '\'\'\'' <StringContentTSQ>* '\'\'\'' | 'r"""' (r"""not '"'""" | '"' r"""not '"'""" | '""' r"""not '"'""")* '"""' | 'r\'\'\'' (r"not '\''" | '\'' r"not '\''" | '\'\'' r"not '\''")* '\'\'\''
+<SingleLineString> ::= <StringDQ> | <StringSQ> | 'r\'' <SAFE_RAW_SQ_CHAR>* '\'' | 'r"' <SAFE_RAW_DQ_CHAR>* '"'
+<MultiLineString> ::= '"""' <StringContentTDQ>* '"""' | '\'\'\'' <StringContentTSQ>* '\'\'\'' | 'r"""' <SAFE_RAW_DQ_CHAR>* '"""' | 'r\'\'\'' <SAFE_RAW_SQ_CHAR>* '\'\'\''
 <IDENTIFIER> ::= <IDENTIFIER_START> <IDENTIFIER_PART>*
-<MULTI_LINE_COMMENT> ::= '/*' (<MULTI_LINE_COMMENT> | r'.')* '*/'
+<MULTI_LINE_COMMENT> ::= '/*' (<MULTI_LINE_COMMENT> | <SAFE_COMMENT_CHAR>)* '*/'
 <EXPONENT> ::= ('e' | 'E') ('+' | '-')? <DIGIT>+
-<HEX_DIGIT> ::= r'[a-f]' | r'[A-F]' | <DIGIT>
+<HEX_DIGIT> ::= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | <DIGIT>
 <StringDQ> ::= '"' <StringContentDQ>* '"'
-<StringContentDQ> ::= r"""not ('\\'|'"'|'\n'|'\r'|'$')""" | '\\' r"not ('\n'|'\r')" | <StringDQ> | '${' <StringContentDQ>* '}' | '$'
+<StringContentDQ> ::= <SAFE_DQ_CHAR> | '\\' <ESCAPE_CHAR> | <StringDQ> | '${' <StringContentDQ>* '}' | '$'
 <StringSQ> ::= '\'' <StringContentSQ>* '\''
-<StringContentSQ> ::= r"not ('\\'|'\''|'\n'|'\r'|'$')" | '\\' r"not ('\n'|'\r')" | <StringSQ> | '${' <StringContentSQ>* '}' | '$'
-<StringContentTDQ> ::= r"""not ('\\'|'"')""" | '"' r"""not '"'""" | '""' r"""not '"'"""
-<StringContentTSQ> ::= '\'' r"not '\''" | '\'\'' r"not '\''" | r'.'
+<StringContentSQ> ::= <SAFE_SQ_CHAR> | '\\' <ESCAPE_CHAR> | <StringSQ> | '${' <StringContentSQ>* '}' | '$'
+<StringContentTDQ> ::= <SAFE_DQ_CHAR>
+<StringContentTSQ> ::= <SAFE_SQ_CHAR>
 <IDENTIFIER_START_NO_DOLLAR> ::= <LETTER> | '_'
-
 <IDENTIFIER_START> ::= <IDENTIFIER_START_NO_DOLLAR> | '$'
 <IDENTIFIER_PART> ::= <IDENTIFIER_START> | <DIGIT>
-<LETTER> ::= r'[a-z]' | r'[A-Z]'
-<DIGIT> ::= r'[0-9]'
-
+<LETTER> ::= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z'
+<DIGIT> ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+<ESCAPE_CHAR> ::= 'n' | 'r' | 't' | '\\' | '"' | '\'' | '$'
+<SAFE_DQ_CHAR> ::= <LETTER> | <DIGIT> | ' ' | '_' | '-' | '+' | '*' | '/' | '=' | '%' | '^' | '&' | '|' | '~' | '<' | '>' | '(' | ')' | '[' | ']' | '{' | '}' | ';' | ':' | ',' | '.' | '?' | '!' | '@' | '#' | '`' | '\''
+<SAFE_SQ_CHAR> ::= <LETTER> | <DIGIT> | ' ' | '_' | '-' | '+' | '*' | '/' | '=' | '%' | '^' | '&' | '|' | '~' | '<' | '>' | '(' | ')' | '[' | ']' | '{' | '}' | ';' | ':' | ',' | '.' | '?' | '!' | '@' | '#' | '`' | '"'
+<SAFE_RAW_DQ_CHAR> ::= <SAFE_DQ_CHAR> | '\\' | '$'
+<SAFE_RAW_SQ_CHAR> ::= <SAFE_SQ_CHAR> | '\\' | '$'
+<SAFE_COMMENT_CHAR> ::= <LETTER> | <DIGIT> | ' ' | '.' | ',' | '!' | '?'
