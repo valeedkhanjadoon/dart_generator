@@ -8,13 +8,64 @@ extern crate alloc;
 pub use defs::*;
 pub use fuzzer::*;
 mod defs {
+	// use alloc::collections::VecDeque;
+	// use alloc::vec::Vec;
 	use core::convert::Infallible;
 	use fandango::Fandango;
 
 	/// Base for the grammar
 	#[derive(Fandango)]
-	#[fandango(grammar = "grammars/dart2.fan", parse = false)]
+	#[fandango(grammar = "grammars/dart.fan", parse = false)]
 	pub struct LanguageName(Infallible);
+
+	/*
+	/// All numbers are even. TODO: Complete the implementation of this constraint.
+	#[derive(Default)]
+	pub struct OnlyEvenNumbersConstraint {
+		path: VecDeque<usize>,
+		violations: Vec<VecDeque<usize>>,
+		checked: usize
+	}
+
+	impl OnlyEvenNumbersConstraint {
+		fn is_digit_even(the_digit : &nonterminal_digit) -> bool {
+			match the_digit.nth::<0>() {
+				nonterminal_digit_0::variant_0(_) => true,
+				nonterminal_digit_0::variant_2(_) => true,
+				nonterminal_digit_0::variant_4(_) => true,
+				nonterminal_digit_0::variant_6(_) => true,
+				nonterminal_digit_0::variant_8(_) => true,
+				_ => false
+			}
+		}
+
+		fn is_even(the_int : &nonterminal_int) -> bool {
+			match the_int.nth::<0>() {
+				nonterminal_int_0::variant_0(more) => {
+					// Here, we're already "in" the nonterminal, and we're matching on the
+					// alternation, so you don't need nth::<0>() to access the children.
+					// I.e., more = <digit_nonzero> <digits> in this case
+					let (_, digits) = more.children();
+					// Now, digits = <digits> ::= <digit> <int> | <digit> , so we have to "go in"
+					match digits.nth::<0>() {
+						nonterminal_digits_0::variant_0(more) => {
+							// You could do this:
+							// let (_, rest) = more.children();
+							// But also, if you really just want one thing from the expansion,
+							// you can directly use nth::<n>(), where n = the index of what you want
+							let rest = more.nth::<1>();
+							// Both are equivalent, and I used to use .nth::<n>() a lot but I can
+							// see an argument for .children() being cleaner.
+							Self::is_even(rest)
+						}
+						nonterminal_digits_0::variant_1(digit) => Self::is_digit_even(digit)
+					}
+				}
+				nonterminal_int_0::variant_1(digit) => Self::is_digit_even(digit)
+			}
+		}
+	}
+	*/
 
 }
 
@@ -75,11 +126,11 @@ mod test {
 			.duration_since(std::time::UNIX_EPOCH)
 			.unwrap()
 			.as_secs();
-		let log_dir = std::path::Path::new("fuzzer_runs");
+		let log_dir = std::path::Path::new("../programs");
 		let _ = std::fs::create_dir_all(log_dir);
 		let log_path = log_dir.join(std::format!("run_{}.txt", timestamp));
 
-		let num_tests = 100;
+		let num_tests = 10;
 		let mut executed = 0;
 		for _ in 0..num_tests {
 			std::println!("============================");
