@@ -1,2 +1,2 @@
-1. Add main() function statically in the code, to focus on program testing.
+1. Add main() function statically in the code, to focus on program testing. (Done)
 2.
