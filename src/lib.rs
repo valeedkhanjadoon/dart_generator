@@ -97,7 +97,7 @@ mod test {
 		let mut generators =
 			tuple_list!(DepthLimiter::new(nonterminal_start::ROOT.inner(), 50));
 		// Just generate 10 to see that it works
-		for _ in 0..10 {
+		for _ in 0..100 {
 			// Generate an input based on the start symbol.
 			let generated =
 				nonterminal_start::generate(&mut rng, &mut generators, 0);
@@ -130,7 +130,7 @@ mod test {
 		let _ = std::fs::create_dir_all(log_dir);
 		let log_path = log_dir.join(std::format!("run_{}.txt", timestamp));
 
-		let num_tests = 10;
+		let num_tests = 100;
 		let mut executed = 0;
 		for _ in 0..num_tests {
 			std::println!("============================");
