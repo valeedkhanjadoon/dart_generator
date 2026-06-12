@@ -9,10 +9,9 @@
                         | <functionDeclaration>
                         | <variableDeclaration> ";";
 
-<classDeclaration> ::= "class " <identifier> " { " <classMembers> " }";
+<classDeclaration> ::= "class " <identifier> "{" <classMembers> " };";
 
-<classMembers> ::= <classMember> <classMembers>
-                 | "";
+<classMembers> ::= <classMember> <classMembers>;
 
 <classMember> ::= <variableDeclaration> ";"
                 | <functionDeclaration>;
@@ -21,8 +20,7 @@
                         | "void " <identifier> "(" <parameterList> ") " <block>;
 
 <parameterList> ::= <parameter> ", " <parameterList>
-                  | <parameter>
-                  | "";
+                  | <parameter>;
 
 <parameter> ::= <type_> " " <identifier>;
 
@@ -75,23 +73,24 @@
 
 <literal> ::= <numericLiteral> | <stringLiteral> | <booleanLiteral>;
 
-<numericLiteral> ::= "42" | "3.14" | "0" | "1";
+<numericLiteral> ::= <digit>* "." <digit>* | <digit>*;
 
-<stringLiteral> ::= "\"hello\"" | "\"world\"";
+<stringLiteral> ::= "\"" <stringCharacter>* "\"" ;
 
 <booleanLiteral> ::= "true" | "false";
 
 <identifier> ::= <identifier_start> <identifier_parts>*
                | <identifier_start>;
 
-<identifier_start> ::= <letter>*
-                     | "_";
+<identifier_start> ::= <letter>*;
 
 <identifier_parts> ::= <identifier_part> <identifier_parts>
                      | <identifier_part>;
 
 <identifier_part> ::= <identifier_start>
                     | <digit>;
+
+<stringCharacter> ::= <letter> | <digit> | "_" | " ";
 
 <letter_lower> ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z";
 

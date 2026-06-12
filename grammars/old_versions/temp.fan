@@ -75,23 +75,24 @@
 
 <literal> ::= <numericLiteral> | <stringLiteral> | <booleanLiteral>;
 
-<numericLiteral> ::= "42" | "3.14" | "0" | "1";
+<numericLiteral> ::= <digit> "." <digit> | <digit>;
 
-<stringLiteral> ::= "\"hello\"" | "\"world\"";
+<stringLiteral> ::= "\"" <stringCharacters>* "\"" ;
 
 <booleanLiteral> ::= "true" | "false";
 
 <identifier> ::= <identifier_start> <identifier_parts>*
                | <identifier_start>;
 
-<identifier_start> ::= <letter>*
-                     | "_";
+<identifier_start> ::= <letter>*;
 
 <identifier_parts> ::= <identifier_part> <identifier_parts>
                      | <identifier_part>;
 
 <identifier_part> ::= <identifier_start>
                     | <digit>;
+
+<stringCharacter> ::= <letter> | <digit> | "_" | " ";
 
 <letter_lower> ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z";
 
