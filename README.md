@@ -134,8 +134,6 @@ RUSTFLAGS='-Znext-solver' cargo +nightly run --example experiment3
 
 # Run individual constraint tests (useful when developing your own)
 RUSTFLAGS='-Znext-solver' cargo +nightly test dart_lang_can_generate -- --nocapture
-RUSTFLAGS='-Znext-solver' cargo +nightly test booleans_must_be_false_constraint_alone -- --nocapture
-RUSTFLAGS='-Znext-solver' cargo +nightly test only_even_decimal_integers_constraint_alone -- --nocapture
 ```
 
 ## Adapting this for your language
